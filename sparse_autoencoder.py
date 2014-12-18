@@ -51,6 +51,24 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size,
     W2 = theta[hidden_size * visible_size:2 * hidden_size * visible_size].reshape(visible_size, hidden_size)
     b1 = theta[2 * hidden_size * visible_size:2 * hidden_size * visible_size + hidden_size]
     b2 = theta[2 * hidden_size * visible_size + hidden_size:]
+
+    z2 = np.dot(W1, data) + np.atleast_2d(b1).T
+    a2 = sigmoid(z2)
+    z3 = np.dot(W2, a2) + np.atleast_2d(b2).T
+    a3 = sigmoid(z3)  # a3 is equivalent to h_Wb in our case
+
+    d3 = -(data - a3) * sigmoid_prime(z3)
+    d2 = np.dot(W2.T, d3) * sigmoid_prime(z2)
+    d1 = np.dot(W1.T, d2) * sigmoid_prime(data)
+    import pdb; pdb.set_trace()
+
+    cost = 0.0  # TODO: add this
+
+    W1grad = np.dot(d2, a1.T)   # TODO: figure out right way to specify this
+    W2grad = np.dot(d3, a2.T)
+    b1grad = d2
+    b2grad = d3
+
     
     # SR-71: YOUR CODE GOES HERE
     # After computing the cost and gradient, we will convert the gradients back
@@ -62,31 +80,4 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size,
                            b2grad.reshape(visible_size)))
 
     return cost, grad
-
-
-# SR-71: predictions?
-def sparse_autoencoder(theta, hidden_size, visible_size, data):
-    """
-    :param theta: trained weights from the autoencoder
-    :param hidden_size: the number of hidden units (probably 25)
-    :param visible_size: the number of input units (probably 64)
-    :param data: Our matrix containing the training data as columns.  So, data(:,i) is the i-th training example.
-    """
-
-    # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
-    # follows the notation convention of the lecture notes.
-    W1 = theta[0:hidden_size * visible_size].reshape(hidden_size, visible_size)
-    b1 = theta[2 * hidden_size * visible_size:2 * hidden_size * visible_size + hidden_size]
-
-    # Number of training examples
-    m = data.shape[1]
-
-    # Forward propagation
-    z2 = W1.dot(data) + np.tile(b1, (m, 1)).transpose()
-    a2 = sigmoid(z2)
-
-    return a2
-
-
-
 

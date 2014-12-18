@@ -20,12 +20,19 @@ def simple_quadratic_function(x):
 # J: a function that outputs a real-number. Calling y = J(theta) will return the
 # function value at theta.
 def compute_gradient(J, theta):
-    # SR-71: YOUR CODE GOES HERE (NUMERICAL GRADIENT)
-    pass
+    EPSILON = 1e-4
+    num_grad = np.zeros(theta.shape)
+
+    for idx in range(len(theta)):
+        vector_to_add = np.zeros(theta.shape)
+        vector_to_add[idx] = EPSILON
+        num_grad[idx] = (J(theta + vector_to_add)[0] - J(theta - vector_to_add)[0]) / (2 * EPSILON)
+
+    return num_grad
 
 
 # This code can be used to check your numerical gradient implementation
-# in computeNumericalGradient.m
+# in computeNumericalGradient.py
 # It analytically evaluates the gradient of a very simple function called
 # simpleQuadraticFunction (see below) and compares the result with your numerical
 # solution. Your numerical gradient implementation is incorrect if

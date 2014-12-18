@@ -5,10 +5,8 @@ import sparse_autoencoder
 import gradient
 import display_network
 
-
-
-##======================================================================
-## STEP 0: Here we provide the relevant parameters values that will
+# ======================================================================
+# STEP 0: Here we provide the relevant parameters values that will
 #  allow your sparse autoencoder to get good filters; you do not need to
 #  change the parameters below.
 
@@ -43,7 +41,7 @@ patches = sample_images.sample_images()
 #  Obtain random parameters theta
 theta = sparse_autoencoder.initialize(hidden_size, visible_size)
 
-#======================================================================
+# =====================================================================
 # STEP 2: Implement sparseAutoencoderCost
 #
 #  You can implement all of the components (squared error cost, weight decay term,
@@ -74,8 +72,8 @@ theta = sparse_autoencoder.initialize(hidden_size, visible_size)
                                                           hidden_size, lambda_,
                                                           sparsity_param, beta, patches)
 print cost, grad
-##======================================================================
-## STEP 3: Gradient Checking
+# ======================================================================
+# STEP 3: Gradient Checking
 #
 # Hint: If you are debugging your code, performing gradient checking on smaller models
 # and smaller training sets (e.g., using only 10 training examples and 1-2 hidden
@@ -106,8 +104,8 @@ if debug:
     print diff
     print "Norm of the difference between numerical and analytical num_grad (should be < 1e-9)\n\n"
 
-##======================================================================
-## STEP 4: After verifying that your implementation of
+# ======================================================================
+# STEP 4: After verifying that your implementation of
 #  sparseAutoencoderCost is correct, You can start training your sparse
 #  autoencoder with minFunc (L-BFGS).
 
@@ -123,8 +121,8 @@ opt_theta = result.x
 
 print result
 
-##======================================================================
-## STEP 5: Visualization
+# ======================================================================
+# STEP 5: Visualization
 
 W1 = opt_theta[0:hidden_size * visible_size].reshape(hidden_size, visible_size).transpose()
 display_network.display_network(W1)
