@@ -52,25 +52,49 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size,
     b1 = theta[2 * hidden_size * visible_size:2 * hidden_size * visible_size + hidden_size]
     b2 = theta[2 * hidden_size * visible_size + hidden_size:]
 
-    z2 = np.dot(W1, data) + np.atleast_2d(b1).T
-    a2 = sigmoid(z2)
-    z3 = np.dot(W2, a2) + np.atleast_2d(b2).T
-    a3 = sigmoid(z3)  # a3 is equivalent to h_Wb in our case
+    W1grad = np.zeros(W1.shape)
+    W2grad = np.zeros(W2.shape)
+    b1grad = np.atleast_2d(np.zeros(b1.shape)).T
+    b2grad = np.atleast_2d(np.zeros(b2.shape)).T
+    num_rows = len(data.T)
+    cost = 0.0
 
-    d3 = -(data - a3) * sigmoid_prime(z3)
-    d2 = np.dot(W2.T, d3) * sigmoid_prime(z2)
-    d1 = np.dot(W1.T, d2) * sigmoid_prime(data)
-    import pdb; pdb.set_trace()
+    rho_avg = get_rho_avg(data, W1, b1)
+    rho_avg_1d = rho_avg[:, 0]
+    sparsity_penalty = get_sparsity_penalty(sparsity_param, beta, rho_avg_1d)
 
-    cost = 0.0  # TODO: add this
+    for row_unshaped in data.T:
+        row = np.atleast_2d(row_unshaped).T
+        z2 = np.dot(W1, row) + np.atleast_2d(b1).T
+        a2 = sigmoid(z2)
+        z3 = np.dot(W2, a2) + np.atleast_2d(b2).T
+        a3 = sigmoid(z3)  # a3 is equivalent to h_Wb in our case
 
-    W1grad = np.dot(d2, a1.T)   # TODO: figure out right way to specify this
-    W2grad = np.dot(d3, a2.T)
-    b1grad = d2
-    b2grad = d3
+        d3 = -(row - a3) * sigmoid_prime(z3)
+        sparsity_param_arr = sparsity_param * np.ones(rho_avg_1d.shape)
+        addl_penalty_deriv = beta * (-sparsity_param_arr / rho_avg_1d + (1 - sparsity_param_arr) / (1 - rho_avg_1d))
+        addl_penalty_deriv = np.atleast_2d(addl_penalty_deriv).T
+        d2 = (np.dot(W2.T, d3) + addl_penalty_deriv) * sigmoid_prime(z2)
 
-    
-    # SR-71: YOUR CODE GOES HERE
+        cost += 0.5 * np.power(np.linalg.norm(a3 - row), 2)
+        W1grad += np.outer(d2, row.T)
+        W2grad += np.outer(d3, a2.T)
+        b1grad += d2
+        b2grad += d3
+
+    cost /= num_rows
+    W1grad /= num_rows
+    W2grad /= num_rows
+    b1grad /= num_rows
+    b2grad /= num_rows
+
+    cost += 0.5 * lambda_ * np.sum(np.power(W1, 2))
+    cost += 0.5 * lambda_ * np.sum(np.power(W2, 2))
+    W1grad += lambda_ * W1
+    W2grad += lambda_ * W2
+
+    cost += sparsity_penalty
+
     # After computing the cost and gradient, we will convert the gradients back
     # to a vector format (suitable for minFunc).  Specifically, we will unroll
     # your gradient matrices into a vector.
@@ -81,3 +105,17 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size,
 
     return cost, grad
 
+def get_rho_avg(data, W1, b1):
+    rho_total = np.zeros(np.atleast_2d(b1).T.shape)
+    for row_unshaped in data.T:
+        row = np.atleast_2d(row_unshaped).T
+        z2 = np.dot(W1, row) + np.atleast_2d(b1).T
+        a2 = sigmoid(z2)
+        rho_total += a2
+    num_rows = len(data.T)
+    return rho_total / num_rows
+
+def get_sparsity_penalty(sparsity_param, beta, rho_avg_1d):
+    kl_divergence = KL_divergence(sparsity_param * np.ones(rho_avg_1d.shape), rho_avg_1d)
+    sparsity_penalty = np.sum(kl_divergence)
+    return beta * sparsity_penalty
