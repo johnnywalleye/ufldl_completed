@@ -41,7 +41,7 @@ def initialize(hidden_size, visible_size):
 # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
 # follows the notation convention of the lecture notes.
 # Returns: (cost,gradient) tuple
-def sparse_autoencoder_cost(theta, visible_size, hidden_size,
+def sparse_autoencoder_cost_not_vectorized(theta, visible_size, hidden_size,
                             lambda_, sparsity_param, beta, data):
     # The input theta is a vector (because minFunc expects the parameters to be a vector).
     # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
@@ -104,6 +104,61 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size,
                            b2grad.reshape(visible_size)))
 
     return cost, grad
+
+
+def sparse_autoencoder_cost(theta, visible_size, hidden_size,
+                                       lambda_, sparsity_param, beta, data):
+    W1 = theta[0:hidden_size * visible_size].reshape(hidden_size, visible_size)
+    W2 = theta[hidden_size * visible_size:2 * hidden_size * visible_size].reshape(visible_size, hidden_size)
+    b1 = theta[2 * hidden_size * visible_size:2 * hidden_size * visible_size + hidden_size]
+    b2 = theta[2 * hidden_size * visible_size + hidden_size:]
+
+    num_rows = len(data.T)
+
+    rho_avg = get_rho_avg(data, W1, b1)
+    rho_avg_1d = rho_avg[:, 0]
+    sparsity_penalty = get_sparsity_penalty(sparsity_param, beta, rho_avg_1d)
+
+    z2 = np.dot(W1, data) + np.repeat(np.atleast_2d(b1), num_rows, 0).T
+    a2 = sigmoid(z2)
+    z3 = np.dot(W2, a2) + np.repeat(np.atleast_2d(b2), num_rows, 0).T
+    a3 = sigmoid(z3)
+
+    d3 = -(data - a3) * sigmoid_prime(z3)
+    sparsity_param_arr = sparsity_param * np.ones(rho_avg_1d.shape)
+    addl_penalty_deriv = beta * (-sparsity_param_arr / rho_avg_1d + (1 - sparsity_param_arr) / (1 - rho_avg_1d))
+    addl_penalty_deriv = np.atleast_2d(addl_penalty_deriv).T
+    d2 = (np.dot(W2.T, d3) + np.repeat(addl_penalty_deriv, num_rows, 1)) * sigmoid_prime(z2)
+
+    W1grad = np.dot(d2, data.T)
+    W2grad = np.dot(d3, a2.T)
+    b1grad = d2.sum(axis=1)
+    b2grad = d3.sum(axis=1)
+    cost = 0.5 * np.sum(np.power(np.linalg.norm(a3 - data, ord=2, axis=0), 2))
+
+    W1grad /= num_rows
+    W2grad /= num_rows
+    b1grad /= num_rows
+    b2grad /= num_rows
+    cost /= num_rows
+
+    cost += 0.5 * lambda_ * np.sum(np.power(W1, 2))
+    cost += 0.5 * lambda_ * np.sum(np.power(W2, 2))
+    W1grad += lambda_ * W1
+    W2grad += lambda_ * W2
+
+    cost += sparsity_penalty
+
+    # After computing the cost and gradient, we will convert the gradients back
+    # to a vector format (suitable for minFunc).  Specifically, we will unroll
+    # your gradient matrices into a vector.
+    grad = np.concatenate((W1grad.reshape(hidden_size * visible_size),
+                           W2grad.reshape(hidden_size * visible_size),
+                           b1grad.reshape(hidden_size),
+                           b2grad.reshape(visible_size)))
+
+    return cost, grad
+
 
 def get_rho_avg(data, W1, b1):
     rho_total = np.zeros(np.atleast_2d(b1).T.shape)

@@ -4,6 +4,7 @@ import sample_images
 import sparse_autoencoder
 import gradient
 import display_network
+import load_MNIST
 
 # ======================================================================
 # STEP 0: Here we provide the relevant parameters values that will
@@ -11,17 +12,22 @@ import display_network
 #  change the parameters below.
 
 # number of input units
-visible_size = 64
+# visible_size = 64
+visible_size = 28 * 28
 # number of input units
-hidden_size = 25
+# hidden_size = 25
+hidden_size = 196
 
 # desired average activation of the hidden units.
 # (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
 #  in the lecture notes).
-sparsity_param = 0.01
+# sparsity_param = 0.01
+sparsity_param = 0.1
 # weight decay parameter
-lambda_ = 1e-3
+# lambda_ = 1e-3
+lambda_ = 3e-3
 # weight of sparsity penalty term
+# beta = 3
 beta = 3
 # debug
 debug = False
@@ -34,9 +40,11 @@ debug = False
 #  display a random sample of 200 patches from the dataset
 
 # Loading Sample Images
-patches = sample_images.sample_images()
+# patches = sample_images.sample_images()
 
 # Loading 10K images from MNIST database
+images = load_MNIST.load_MNIST_images('data/mnist/train-images-idx3-ubyte')
+patches = images[:, 0:10000]
 
 #  Obtain random parameters theta
 theta = sparse_autoencoder.initialize(hidden_size, visible_size)
@@ -91,7 +99,7 @@ if debug:
     # for the sparse autoencoder.
     # J is the cost function
 
-    J = lambda x: sparse_autoencoder.sparse_autoencoder_cost(x, visible_size, hidden_size,
+    J = lambda x: sparse_autoencoder.sparse_autoencoder_cost_vectorized(x, visible_size, hidden_size,
                                                              lambda_, sparsity_param,
                                                              beta, patches)
     num_grad = gradient.compute_gradient(J, theta)
