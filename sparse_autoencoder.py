@@ -41,7 +41,7 @@ def initialize(hidden_size, visible_size):
 # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
 # follows the notation convention of the lecture notes.
 # Returns: (cost,gradient) tuple
-def sparse_autoencoder_cost_not_vectorized(theta, visible_size, hidden_size,
+def sparse_autoencoder_cost(theta, visible_size, hidden_size,
                             lambda_, sparsity_param, beta, data):
     # The input theta is a vector (because minFunc expects the parameters to be a vector).
     # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
@@ -106,7 +106,7 @@ def sparse_autoencoder_cost_not_vectorized(theta, visible_size, hidden_size,
     return cost, grad
 
 
-def sparse_autoencoder_cost(theta, visible_size, hidden_size,
+def sparse_autoencoder_cost_vectorized(theta, visible_size, hidden_size,
                                        lambda_, sparsity_param, beta, data):
     W1 = theta[0:hidden_size * visible_size].reshape(hidden_size, visible_size)
     W2 = theta[hidden_size * visible_size:2 * hidden_size * visible_size].reshape(visible_size, hidden_size)
