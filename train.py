@@ -72,8 +72,8 @@ def train(visible_size, hidden_size, sparsity_param, lambda_, beta, debug, patch
 
         # Compare numerically computed gradients with the ones obtained from backpropagation
         diff = np.linalg.norm(num_grad - grad) / np.linalg.norm(num_grad + grad)
-        print diff
         print "Norm of the difference between numerical and analytical num_grad (should be < 1e-9)\n\n"
+        print diff
 
     # ======================================================================
     # STEP 4: After verifying that your implementation of
