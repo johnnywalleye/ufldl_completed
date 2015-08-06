@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ufldl_sondag.iml" filepath="$PROJECT_DIR$/.idea/ufldl_sondag.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ufldl_completed.iml" filepath="$PROJECT_DIR$/.idea/ufldl_completed.iml" />
     </modules>
   </component>
 </project>
