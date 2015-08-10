@@ -20,8 +20,8 @@ Implement PCA, PCA whitening & ZCA whitening
 ### Softmax Regression
 Classify MNIST digits via softmax regression (multivariate logistic regression)
 
-* [softmax.py](softmax.py): Softmax regression cost & gradient functions
 * [ex_4_softmax_regression.py](ex_4_softmax_regression.py): Classify MNIST digits
+* [softmax.py](softmax.py): Softmax regression cost & gradient functions
 
 ### Self-Taught Learning and Unsupervised Feature Learning
 Classify MNIST digits via self-taught learning paradigm, i.e. learn features via sparse autoencoder using digits 5-9 as unlabelled examples and train softmax regression on digits 0-4 as labelled examples
