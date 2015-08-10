@@ -14,7 +14,7 @@ import PIL
 # opt_graycolor: whether we use gray as the heat map. Default is true.
 # opt_colmajor: you can switch convention to row major for A. In that
 # case, each row of A is a filter. Default value is false.
-def display_network(A, filename='weights.png'):
+def display_network(A, filename='output/weights.png'):
     opt_normalize = True
     opt_graycolor = True
 
@@ -52,7 +52,7 @@ def display_network(A, filename='weights.png'):
     plt.imsave(filename, image, cmap=matplotlib.cm.gray)
 
 
-def display_color_network(A, filename='weights.png'):
+def display_color_network(A, filename='output/weights.png'):
     """
     # display receptive field(s) or basis vector(s) for image patches
     #

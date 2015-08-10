@@ -13,7 +13,7 @@ import sample_images
 patches = sample_images.sample_images_raw()
 num_samples = patches.shape[1]
 random_sel = random.sample(range(num_samples), 400)
-display_network.display_network(patches[:, random_sel], 'raw_pca.png')
+display_network.display_network(patches[:, random_sel], 'output/raw_pca.png')
 
 # ================================================================
 # Step 0b: Zero-mean the data (by row)
@@ -83,8 +83,8 @@ num_to_retain = np.argmax(eig_cumsum[eig_cumsum < var_to_capture]) + 1
 x_tilde = x_rot.copy()
 x_tilde[num_to_retain:, ] = 0.0
 x_hat = np.dot(u, x_tilde)
-display_network.display_network(patches[:, random_sel], 'Raw Images.png')
-display_network.display_network(x_hat[:, random_sel], 'PCA processed images %.2f .png' % var_to_capture)
+display_network.display_network(patches[:, random_sel], 'output/Raw Images.png')
+display_network.display_network(x_hat[:, random_sel], 'output/PCA processed images %.2f .png' % var_to_capture)
 
 # Visualise the data, and compare it to the raw data
 # You should observe that the raw and processed data are of comparable quality.
@@ -151,8 +151,8 @@ fig3.show()
 #  that whitening results in, among other things, enhanced edges.
 
 x_zca_white = np.dot(u, x_pca_white)
-display_network.display_network(x_zca_white[:, random_sel], 'ZCA whitened images')
-display_network.display_network(patches[:, random_sel], 'Raw images')
+display_network.display_network(x_zca_white[:, random_sel], 'output/ZCA whitened images')
+display_network.display_network(patches[:, random_sel], 'output/Raw images')
 
 
 # xZCAWhite = zeros(size(x));
