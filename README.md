@@ -5,6 +5,8 @@ Tutorial Website: http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial
 ### Sparse Autoencoder
 Sparse Autoencoder vectorized implementation, learning/visualizing features on MNIST data
 
+* [ex_1_sparse_autoencoder.py](ex_1_sparse_autoencoder.py)
+* [ex_2_sparse_autoencoder_vect.py](ex_2_sparse_autoencoder_vect.py)
 * [load_MNIST.py](load_MNIST.py): Load MNIST images
 * [sample_images.py](sample_images.py): Load sample images for testing sparse auto-encoder
 * [gradient.py](gradient.py): Functions to compute & check cost and gradient
@@ -15,6 +17,8 @@ Sparse Autoencoder vectorized implementation, learning/visualizing features on M
 ### Preprocessing: PCA & Whitening
 Implement PCA, PCA whitening & ZCA whitening
 
+* [ex_3a_pca_in_2d.py](ex_3a_pca_in_2d.py)
+* [ex_3b_pca_gen.py](ex_3b_pca_gen.py)
 * [pca_gen.py](pca_gen.py)
 
 ### Softmax Regression
